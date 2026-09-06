@@ -16,7 +16,7 @@ Language tools are supplied by the generated Nix development shell; they do not 
 Run the generator from the directory that should contain the new checkout:
 
 ```console
-nix run github:bizmythy/nix-project-template -- my-project
+nix run github:drew-council/nix-project-template -- my-project
 ```
 
 Select one or more additive language profiles with repeated `--language` options:
