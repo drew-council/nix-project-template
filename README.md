@@ -13,7 +13,7 @@ Language tools are supplied by the generated Nix development shell; they do not 
 
 ## Usage
 
-Run the generator from the directory that should contain the new checkout:
+Run the generator from any directory. By default, it creates the new checkout at `~/personal/<repository-name>` if `~/personal` is an existing directory:
 
 ```console
 nix run github:drew-council/nix-project-template -- my-project
@@ -22,11 +22,7 @@ nix run github:drew-council/nix-project-template -- my-project
 Select one or more additive language profiles with repeated `--language` options:
 
 ```console
-nix run . -- my-project \
-  --language rust \
-  --language python \
-  --language go \
-  --language typescript
+nix run . -- my-project --language rust --language python --language go --language typescript
 ```
 
 All selected projects are initialized in the same repository root. Profiles add:
@@ -42,7 +38,15 @@ By default, the generator creates a public GitHub repository and emits `LICENSE-
 nix run . -- internal-tool --private --language python
 ```
 
-The GitHub owner is the account currently active in `gh`. The destination is `<current-directory>/<repository-name>`.
+Use `--directory` to choose a different **parent directory**:
+
+```console
+nix run . -- my-project --directory ~/work
+```
+
+This creates `~/work/my-project`. Absolute paths, paths relative to the current directory, and `~` expansion are supported. Missing parent directories are created as needed. If `~/personal` isn't an existing directory, `--directory` is required; the generator never falls back to the current directory automatically. Use `--directory .` to explicitly create a project under the current directory.
+
+The GitHub owner is the account currently active in `gh`.
 
 ## Generated workflow
 

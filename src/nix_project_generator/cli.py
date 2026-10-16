@@ -12,6 +12,14 @@ from .profiles import Language, normalized_languages
 @click.command()
 @click.argument("repository_name")
 @click.option(
+    "--directory",
+    type=click.Path(file_okay=False, path_type=Path),
+    help=(
+        "Parent directory for the new repository. Defaults to ~/personal "
+        "if it exists; otherwise this option is required."
+    ),
+)
+@click.option(
     "--language",
     "languages",
     type=click.Choice([language.value for language in Language]),
@@ -26,13 +34,27 @@ from .profiles import Language, normalized_languages
 )
 def main(
     repository_name: str,
+    directory: Path | None,
     languages: tuple[str, ...],
     private_repository: bool,
 ) -> None:
-    """Create and publish REPOSITORY_NAME below the current directory."""
+    """Create and publish REPOSITORY_NAME below ~/personal or --directory."""
+    if directory is None:
+        directory = Path.home() / "personal"
+        if not directory.is_dir():
+            raise click.UsageError(
+                "~/personal is not an existing directory; "
+                "specify a parent directory with --directory."
+            )
+    directory = directory.expanduser().resolve()
+    if directory.exists() and not directory.is_dir():
+        raise click.BadParameter(
+            "must be a directory", param_hint="--directory"
+        )
+
     options = GenerationOptions(
         name=repository_name,
-        destination=Path.cwd() / repository_name,
+        destination=directory / repository_name,
         languages=normalized_languages(languages),
         private=private_repository,
     )
